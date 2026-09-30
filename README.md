@@ -107,31 +107,169 @@ Senior Software Engineer with **6 years of experience** building responsive, hig
   <img src="https://github-readme-streak-stats.herokuapp.com/?user=ashutosh232&theme=tokyonight&hide_border=true" alt="GitHub Streak" />
 </div>
 
-## 📂 Featured Enterprise Projects & Open Source
+## 📂 Featured Enterprise Projects & Architecture Showcases
 
-### 🔹 [microfrontend-shell-federation](https://github.com/ashutosh232/microfrontend-shell-federation)
-Enterprise Microfrontend shell orchestrating independent remotes with Webpack 5 Module Federation, shared React/Zustand state, and dynamic route loading.
+### 🔹 **microfrontend-shell-federation**
 
-- **Tech**: `TypeScript` · `React 18/19` · `Webpack 5` · `Module Federation` · `Zustand` · `Jest`
+> Enterprise Microfrontend shell orchestrating independent remotes with Webpack 5 Module Federation, shared React/Zustand state, and dynamic route loading.
+
+- **Tech Stack**: `TypeScript` · `React 18/19` · `Webpack 5` · `Module Federation` · `Zustand` · `Jest`
 - **Key Metric**: *Reduced bundle payload by 42% on initial page paint; enables 100% autonomous deployments for feature squads without shell re-deploys.*
 
-### 🔹 [enterprise-banking-rbac-suite](https://github.com/ashutosh232/enterprise-banking-rbac-suite)
-High-integrity banking workflow portal with secure RBAC, dynamic schema validation, Node.js REST APIs, and MongoDB/SQL transactions.
+<details>
+<summary><b>🔍 View Architecture Blueprint & Implementation</b></summary>
 
-- **Tech**: `React` · `TypeScript` · `Node.js` · `Express` · `PostgreSQL` · `MongoDB` · `JWT / RBAC`
+**Pattern**: `Host / Remote Microfrontend Topology`
+
+**Engineering Problem**:
+Large enterprise monolithic applications cause deploy bottlenecks, huge bundle sizes (>8MB), and team coordination deadlocks across 5+ feature squads.
+
+**Solution Implemented**:
+Constructed a host shell with dynamic Webpack 5 Module Federation container. Remotes expose isolated modules via bidirectional sharing, with a zero-friction Zustand shared event bus for cross-mfe communication.
+
+**Implementation Code**:
+```typescript
+// webpack.config.js - Host Shell Configuration
+const { ModuleFederationPlugin } = require("webpack").container;
+
+module.exports = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: "shell_container",
+      remotes: {
+        reinsuranceModule: "reinsurance@http://cdn.enterprise.local/reinsurance/remoteEntry.js",
+        claimsPortal: "claims@http://cdn.enterprise.local/claims/remoteEntry.js",
+        authProvider: "auth@http://cdn.enterprise.local/auth/remoteEntry.js",
+      },
+      shared: {
+        react: { singleton: true, requiredVersion: "^18.2.0" },
+        "react-dom": { singleton: true, requiredVersion: "^18.2.0" },
+        zustand: { singleton: true },
+      },
+    }),
+  ],
+};
+```
+
+</details>
+
+### 🔹 **enterprise-banking-rbac-suite**
+
+> High-integrity banking workflow portal with secure RBAC, dynamic schema validation, Node.js REST APIs, and MongoDB/SQL transactions.
+
+- **Tech Stack**: `React` · `TypeScript` · `Node.js` · `Express` · `PostgreSQL` · `MongoDB` · `JWT / RBAC`
 - **Key Metric**: *Protected over 1,000+ financial user accounts with sub-40ms authorization checks and zero unauthorized escalations.*
 
-### 🔹 [react-zustand-enterprise-store](https://github.com/ashutosh232/react-zustand-enterprise-store)
-Lightweight, modular state management pattern for distributed micro-apps with zero-boilerplate sync, devtools integration, and cross-tab persistence.
+<details>
+<summary><b>🔍 View Architecture Blueprint & Implementation</b></summary>
 
-- **Tech**: `TypeScript` · `Zustand` · `React` · `BroadcastChannel API`
+**Pattern**: `Full-Stack Secured Financial Tier`
+
+**Engineering Problem**:
+Enterprise banking workflows require multi-tier role authorization (teller, auditor, risk manager) and strict audit logging without performance degradation.
+
+**Solution Implemented**:
+Developed a robust token-based RBAC middleware coupled with dynamic React permission gates (`<Can I="approve" a="Transaction" />`). Backend implements ACID transactions across PostgreSQL and audit event logging in MongoDB.
+
+**Implementation Code**:
+```typescript
+// PermissionGate.tsx - Dynamic Role-Based Access Control
+export const PermissionGate: React.FC<PermissionGateProps> = ({
+  role,
+  permission,
+  fallback = null,
+  children,
+}) => {
+  const { user } = useAuthStore();
+  const hasAccess = checkUserPermissions(user, role, permission);
+
+  if (!hasAccess) {
+    return <>{fallback}</>;
+  }
+
+  return <>{children}</>;
+};
+```
+
+</details>
+
+### 🔹 **react-zustand-enterprise-store**
+
+> Lightweight, modular state management pattern for distributed micro-apps with zero-boilerplate sync, devtools integration, and cross-tab persistence.
+
+- **Tech Stack**: `TypeScript` · `Zustand` · `React` · `BroadcastChannel API`
 - **Key Metric**: *65% less boilerplate code than Redux; zero dependency overhead for independent remote microfrontend packages.*
 
-### 🔹 [telecom-flow-engine](https://github.com/ashutosh232/telecom-flow-engine)
-Customer-facing high-throughput self-service application with 100% Jest/RTL coverage, resilient offline caching, and sub-second render.
+<details>
+<summary><b>🔍 View Architecture Blueprint & Implementation</b></summary>
 
-- **Tech**: `React` · `JavaScript (ES6+)` · `Jest` · `React Testing Library` · `Webpack`
+**Pattern**: `Distributed Store with Micro-App Event Bus`
+
+**Engineering Problem**:
+Redux boilerplate was overwhelming lightweight remote microfrontends, leading to memory leaks when unmounting feature modules.
+
+**Solution Implemented**:
+Designed an elegant slice-based Zustand store with decoupled subscriber middleware. Supports scoped microfrontend lifecycle mounts and local-storage syncing.
+
+**Implementation Code**:
+```typescript
+// createEnterpriseSlice.ts
+import { StateCreator } from 'zustand';
+
+export interface UserSlice {
+  userId: string | null;
+  permissions: string[];
+  setSession: (id: string, perms: string[]) => void;
+  clearSession: () => void;
+}
+
+export const createUserSlice: StateCreator<UserSlice> = (set) => ({
+  userId: null,
+  permissions: [],
+  setSession: (userId, permissions) => set({ userId, permissions }),
+  clearSession: () => set({ userId: null, permissions: [] }),
+});
+```
+
+</details>
+
+### 🔹 **telecom-flow-engine**
+
+> Customer-facing high-throughput self-service application with 100% Jest/RTL coverage, resilient offline caching, and sub-second render.
+
+- **Tech Stack**: `React` · `JavaScript (ES6+)` · `Jest` · `React Testing Library` · `Webpack`
 - **Key Metric**: *Over 85% unit and integration test coverage across 140+ components, with zero critical defects during national rollout.*
+
+<details>
+<summary><b>🔍 View Architecture Blueprint & Implementation</b></summary>
+
+**Pattern**: `Resilient Multi-Step Customer Journey Engine`
+
+**Engineering Problem**:
+Telecom billing and plan upgrade journeys suffered from high drop-off rates due to complicated multi-step forms and unstable flaky state.
+
+**Solution Implemented**:
+Architected a deterministic state machine-driven stepper with comprehensive Test-Driven Development (TDD) via Jest & React Testing Library, catching 99% of edge cases prior to staging.
+
+**Implementation Code**:
+```typescript
+// BillingStepper.test.tsx
+describe('<BillingFlowStepper />', () => {
+  it('validates customer MSISDN and transitions to plan selection step', async () => {
+    render(<BillingFlowStepper customerTier="enterprise" />);
+    
+    const input = screen.getByLabelText(/subscriber number/i);
+    await userEvent.type(input, '9588422093');
+    
+    const submitBtn = screen.getByRole('button', { name: /continue to plans/i });
+    await userEvent.click(submitBtn);
+
+    expect(await screen.findByText(/select high-speed enterprise plan/i)).toBeInTheDocument();
+  });
+});
+```
+
+</details>
 
 ## 💼 Career Milestones
 
