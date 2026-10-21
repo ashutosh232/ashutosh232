@@ -98,15 +98,6 @@ Senior Software Engineer with **6 years of experience** building responsive, hig
                     Shared Singletons: React, React-DOM, Zustand
 ```
 
-## 📊 GitHub Analytics & Streaks
-
-<div align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=ashutosh232&show_icons=true&theme=tokyonight&hide_border=true&count_private=true&include_all_commits=true" height="175" alt="GitHub Stats" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=ashutosh232&layout=compact&theme=tokyonight&hide_border=true&langs_count=6" height="175" alt="Top Languages" />
-  <br />
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=ashutosh232&theme=tokyonight&hide_border=true" alt="GitHub Streak" />
-</div>
-
 ## 📂 Featured Enterprise Projects & Architecture Showcases
 
 ### 🔹 **microfrontend-shell-federation**
